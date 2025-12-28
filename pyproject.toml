@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlasdb"
+version = "0.1.0"
+description = "Your project description"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Your Name", email = "you@example.com" }
+]
+
+dependencies = []
+
+# -----------------
+# Ruff configuration
+# -----------------
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+# Enable common rule sets
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+ignore = [
+    "E501",  # line length (handled by formatter)
+]
+
+# Exclude typical folders
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+# -----------------
+# Ruff formatter
+# -----------------
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+# -----------------
+# Import sorting
+# -----------------
+[tool.ruff.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+known-first-party = ["your_project_name"]
+
+# -----------------
+# Pytest (optional)
+# -----------------
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = ["tests"]

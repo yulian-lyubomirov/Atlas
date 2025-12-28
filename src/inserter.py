@@ -6,6 +6,7 @@ from typing import Any, Iterable
 
 import pandas as pd
 import psycopg
+import configparser
 
 
 class FetchFormat(str, Enum):
@@ -25,12 +26,19 @@ class DB:
         return self._conn
 
     def connect(
-        self, *, conninfo: str | None = None, service: str | None = None, **kwargs
+        self,
+        *,
+        conninfo: str | None = None,
+        service: str | None = None,
+        config_file: str | None = None,
+        **kwargs,
     ) -> "DB":
-        if conninfo is None and service is None:
+        if conninfo is None and service is None and config_file is None:
             raise ValueError("Either 'conninfo' or 'service' must be provided")
         if service:
             conninfo = f"service={service}"
+        if config_file:
+            conninfo = self.conninfo_from_config(path=config_file, section="atlasdb")
 
         self._conn = psycopg.Connection.connect(
             conninfo=conninfo, autocommit=True, **kwargs
@@ -76,7 +84,28 @@ class DB:
         full_table = f"{schema}.{table}"
         with self.cursor() as cur:
             with cur.copy(
-                f'COPY {full_table} ({", ".join(df.columns)}) FROM STDIN WITH (FORMAT csv, HEADER false)'
+                f"COPY {full_table} ({', '.join(df.columns)}) FROM STDIN WITH (FORMAT csv, HEADER false)"
             ) as cp:
                 cp.write(df.to_csv(index=False, header=False))
         return len(df)
+
+    @staticmethod
+    def conninfo_from_config(*, path: str, section: str) -> str:
+        cfg = configparser.ConfigParser()
+
+        if not cfg.read(path):
+            raise FileNotFoundError(f"Config file not found: {path}")
+
+        if section not in cfg:
+            raise KeyError(f"Section [{section}] not found in {path}")
+
+        db = cfg[section]
+
+        required = {"host", "port", "dbname", "user", "password"}
+        missing = required - set(db)
+        if missing:
+            raise KeyError(f"Missing keys in [{section}]: {', '.join(missing)}")
+
+        return " ".join(
+            f"{k}={db[k]}" for k in ("host", "port", "dbname", "user", "password")
+        )

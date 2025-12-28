@@ -8,7 +8,7 @@ FETCH_ALL_ASSET_TYPES = """SELECT asset_type.id, asset_type.name
                             ORDER BY asset_type.id"""
 FETCH_ASSET_TYPE_BY_ASSET_TYPE_NAME = """SELECT asset_type.id
                                             FROM asset_type
-                                            WHERE asset_type.name = %(asset_name)s
+                                            WHERE asset_type.name = %(name)s
                                             ORDER BY asset_type.id"""
 FETCH_PROFILE_ASSET_TRANSACTIONS_BY_USER_ID = """ SELECT
                                                     asset_transaction.user_id,
@@ -47,3 +47,19 @@ FETCH_ASSET_TYPES_BY_PROFILE = """WITH user_assets AS (
                                    INNER JOIN user_assets
                                         ON asset_type.id = user_assets.asset_type_id
                                     ORDER BY asset_type_id"""
+
+FETCH_ASSET_SYMBOL_BY_ASSET_ISIN = """
+                                    SELECT symbol
+                                    FROM public.asset
+                                    WHERE isin = %(isin)s
+                                    LIMIT 1
+                                    """
+FETCH_ASSET_ISIN_BY_ASSET_SYMBOL = """
+                                    SELECT isin
+                                    FROM public.asset
+                                    WHERE symbol = %(symbol)s
+                                    LIMIT 1
+                                    """
+FETCH_ASSET_BY_ISIN_LIST = """SELECT * FROM public.asset 
+                                WHERE isin = ANY(%(isin)s)
+                                ORDER BY isin"""

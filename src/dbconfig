@@ -1,0 +1,6 @@
+[atlasdb]
+host = 51.20.253.7
+port = 5432
+dbname = atlasdb
+user = atlasuser
+password =hello1234

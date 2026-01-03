@@ -12,9 +12,10 @@ CREATE TABLE currency (
     name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE profile (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
     creation_date TIMESTAMP NOT NULL DEFAULT now()
 );
 
@@ -42,7 +43,7 @@ CREATE TABLE asset_data (
 
 -- Transactions
 CREATE TABLE asset_transaction (
-    user_id INT NOT NULL REFERENCES profile(id),
+    user_id INT NOT NULL REFERENCES users(id),
     asset_isin TEXT NOT NULL REFERENCES asset(isin),
     quantity NUMERIC(18,8) NOT NULL,
     price NUMERIC(18,8) NOT NULL,
@@ -53,7 +54,7 @@ CREATE TABLE asset_transaction (
 -- Savings account
 CREATE TABLE savings_account (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES profile(id),
+    user_id INT NOT NULL REFERENCES users(id),
     currency_id INT NOT NULL REFERENCES currency(id),
     creation_date TIMESTAMP NOT NULL DEFAULT now(),
     annual_interest_rate NUMERIC(5,4) NOT NULL

@@ -6,7 +6,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 async def create_user(
     request: Request,
     name: str = Body(...),
-    password: str = Body(...)
+    password: str = Body(...),
+    email: str = Body(...)
 ):
     db = request.app.state.db
     
@@ -16,8 +17,8 @@ async def create_user(
 
     try:
         db.execute(
-            "INSERT INTO users (name, password_hash) VALUES (%(name)s, %(password_hash)s)",
-            {"name": name, "password_hash": hashed_pw.decode("utf-8")}
+            "INSERT INTO users (name, password_hash) VALUES (%(name)s, %(password_hash)s,%(email)s)",
+            {"name": name, "password_hash": hashed_pw.decode("utf-8"),"email":email}
         )
         return {"status": "success", "name": name}
     except Exception as e:
